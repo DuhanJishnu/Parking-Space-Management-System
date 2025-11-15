@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import PLotCards from "~/components/P_Lot_Cards";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import { ArrowLeft } from "lucide-react";
 
 interface CardProps {
@@ -24,6 +24,9 @@ export default function Available_Slots() {
     { area: "Lot J", vehicleType: "Car", available: 1, total: 5 },
   ];
 
+  const location = useLocation();
+  const { coords, vehicleNumber } = location.state || {};
+  useEffect(()=>console.log( "Coords in available : ", coords, " vehicle no : ", vehicleNumber ),[])
   const navigate = useNavigate();
 
   return (

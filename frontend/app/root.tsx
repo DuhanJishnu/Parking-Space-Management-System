@@ -5,9 +5,12 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLocation,
+  Navigate
 } from "react-router";
-
+import { useContext } from "react";
 import type { Route } from "./+types/root";
+import { UserProvider, UserContext } from "./context/User";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
@@ -33,7 +36,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {children}
+        <UserProvider>
+          {children}
+        </UserProvider>
         <ScrollRestoration />
         <Scripts />
       </body>
@@ -42,6 +47,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  const { user } = useContext(UserContext);
+  const location = useLocation();
+
+  if (!user && location.pathname !== '/') {
+    return <Navigate to="/" />;
+  }
+
   return <Outlet />;
 }
 
