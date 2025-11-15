@@ -1,17 +1,20 @@
 from flask import Blueprint, request, jsonify
 from app.extensions import db
 from app.models.parking_lot import ParkingLot
+from app.services.parking_service import ParkingService
+
 
 parking_lots_bp = Blueprint('parking_lots', __name__)
 
 @parking_lots_bp.route('/', methods=['GET'])
 def get_parking_lots():
-    """Get all parking lots"""
+    """Get all parking lots with availability info"""
     try:
         lots = ParkingLot.query.all()
+        
         return jsonify({
             'success': True,
-            'data': [lot.to_dict() for lot in lots],
+            'data': [lot.to_dict_with_availability() for lot in lots],
             'count': len(lots)
         })
     except Exception as e:

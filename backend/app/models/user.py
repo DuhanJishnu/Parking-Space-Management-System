@@ -14,8 +14,6 @@ class User(BaseModel):
     name = db.Column(db.String(100), nullable=False)
     contact_no = db.Column(db.String(20), nullable=False)
     address = db.Column(db.String(200))
-    email = db.Column(db.String(100), unique=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.Enum(UserRole), default=UserRole.CUSTOMER)
     
     # Relationships
@@ -27,7 +25,6 @@ class User(BaseModel):
             'name': self.name,
             'contact_no': self.contact_no,
             'address': self.address,
-            'email': self.email,
             'role': self.role.value,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()

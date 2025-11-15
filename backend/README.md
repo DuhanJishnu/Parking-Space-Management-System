@@ -42,20 +42,24 @@ http://localhost:5000/api
 - **Response:**
 ```json
 {
-  "success": true,
+  "count": 1,
   "data": [
     {
-      "id": 1,
-      "name": "Downtown Parking",
-      "location": "123 Main St, Downtown",
-      "capacity": 50,
+      "available_2w_spaces": 0,
+      "available_4w_spaces": 10,
+      "available_ev_spaces": 5,
       "base_rate": 5.0,
+      "capacity": 50,
+      "created_at": "2025-11-15T09:47:04.568313",
       "geo_location": "40.7128,-74.0060",
-      "created_at": "2023-10-01T10:00:00",
-      "updated_at": "2023-10-01T10:00:00"
+      "id": 1,
+      "location": "123 Main St, Downtown",
+      "name": "Downtown Parking",
+      "total_available_spaces": 20,
+      "updated_at": "2025-11-15T09:47:04.568313"
     }
   ],
-  "count": 1
+  "success": true
 }
 ```
 
@@ -229,7 +233,6 @@ http://localhost:5000/api
       "name": "Admin User",
       "contact_no": "+1234567890",
       "address": null,
-      "email": "admin@parking.com",
       "role": "admin",
       "created_at": "2023-10-01T10:00:00",
       "updated_at": "2023-10-01T10:00:00"
@@ -248,8 +251,6 @@ http://localhost:5000/api
 {
   "name": "John Doe",
   "contact_no": "+1234567890",
-  "email": "john@example.com",
-  "password": "securepassword",
   "role": "customer",
   "address": "123 Main St"
 }
@@ -535,7 +536,6 @@ http://localhost:5000/api
   "name": "John Doe",
   "contact_no": "+1234567890",
   "address": "123 Main St",
-  "email": "john@example.com",
   "role": "customer",
   "created_at": "2023-10-01T10:00:00",
   "updated_at": "2023-10-01T10:00:00"

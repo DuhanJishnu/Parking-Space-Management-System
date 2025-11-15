@@ -52,7 +52,7 @@ def create_user():
         data = request.get_json()
         
         # Validate required fields
-        required_fields = ['name', 'contact_no', 'email', 'password']
+        required_fields = ['name', 'contact_no']
         for field in required_fields:
             if field not in data:
                 return jsonify({
@@ -60,20 +60,10 @@ def create_user():
                     'error': f'Missing required field: {field}'
                 }), 400
         
-        # Check if email already exists
-        existing_user = User.query.filter_by(email=data['email']).first()
-        if existing_user:
-            return jsonify({
-                'success': False,
-                'error': 'User with this email already exists'
-            }), 400
-        
         user = User(
             name=data['name'],
             contact_no=data['contact_no'],
             address=data.get('address'),
-            email=data['email'],
-            password_hash=generate_password_hash(data['password']),
             role=UserRole(data.get('role', 'customer'))
         )
         
@@ -106,18 +96,6 @@ def update_user(user_id):
             user.contact_no = data['contact_no']
         if 'address' in data:
             user.address = data['address']
-        if 'email' in data:
-            # Check if email is being changed and if it conflicts with existing
-            if data['email'] != user.email:
-                existing_user = User.query.filter_by(email=data['email']).first()
-                if existing_user:
-                    return jsonify({
-                        'success': False,
-                        'error': 'User with this email already exists'
-                    }), 400
-            user.email = data['email']
-        if 'password' in data:
-            user.password_hash = generate_password_hash(data['password'])
         if 'role' in data:
             user.role = UserRole(data['role'])
         

@@ -1,5 +1,6 @@
 from app.extensions import db
 from app.models.base import BaseModel
+from app.models.parking_space import ParkingSpace, SpaceType, SpaceState
 
 class ParkingLot(BaseModel):
     __tablename__ = 'parking_lots'
@@ -26,5 +27,27 @@ class ParkingLot(BaseModel):
             'updated_at': self.updated_at.isoformat()
         }
     
+    def get_available_spaces_count(self, space_type=None):
+        """Get count of available spaces, optionally filtered by type"""
+        # FIXED: Create a new query instead of using self.parking_spaces.filter()
+        query = ParkingSpace.query.filter(
+            ParkingSpace.lot_id == self.id,
+            ParkingSpace.state == SpaceState.UNOCCUPIED
+        )
+        
+        if space_type:
+            query = query.filter(ParkingSpace.space_type == space_type)
+        
+        return query.count()
+
+    def to_dict_with_availability(self):
+        """Enhanced to_dict with availability counts"""
+        data = self.to_dict()
+        data['available_2w_spaces'] = self.get_available_spaces_count(SpaceType.TWO_WHEELER)
+        data['available_4w_spaces'] = self.get_available_spaces_count(SpaceType.FOUR_WHEELER)
+        data['available_ev_spaces'] = self.get_available_spaces_count(SpaceType.EV)
+        data['total_available_spaces'] = self.get_available_spaces_count()
+        return data
+
     def __repr__(self):
         return f'<ParkingLot {self.name}>'

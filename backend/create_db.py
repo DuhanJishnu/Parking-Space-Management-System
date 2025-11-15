@@ -19,42 +19,36 @@ def create_sample_data():
             print("Creating sample data for Neon PostgreSQL...")
             
             # Check if admin already exists
-            admin = User.query.filter_by(email='admin@parking.com').first()
+            admin = User.query.filter_by(name='Admin User').first()
             if not admin:
                 # Create admin user
                 admin = User(
                     name='Admin User',
                     contact_no='+1234567890',
-                    email='admin@parking.com',
-                    password_hash=generate_password_hash('admin123'),
                     role=UserRole.ADMIN
                 )
                 db.session.add(admin)
                 print("Created admin user")
             
             # Check if staff already exists
-            staff = User.query.filter_by(email='staff@parking.com').first()
+            staff = User.query.filter_by(name='Staff User').first()
             if not staff:
                 # Create staff user
                 staff = User(
                     name='Staff User',
                     contact_no='+1234567891',
-                    email='staff@parking.com',
-                    password_hash=generate_password_hash('staff123'),
                     role=UserRole.STAFF
                 )
                 db.session.add(staff)
                 print("Created staff user")
             
             # Check if customer already exists
-            customer = User.query.filter_by(email='customer@example.com').first()
+            customer = User.query.filter_by(name='John Doe').first()
             if not customer:
                 # Create customer user
                 customer = User(
                     name='John Doe',
                     contact_no='+1234567892',
-                    email='customer@example.com',
-                    password_hash=generate_password_hash('customer123'),
                     role=UserRole.CUSTOMER
                 )
                 db.session.add(customer)
