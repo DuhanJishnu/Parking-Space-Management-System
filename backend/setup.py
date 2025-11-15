@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-Simple setup script for Parking Management System with Neon PostgreSQL
-Replaces: setup_neon.py, migrate_neon.py, reset_migrations.py, fixed_migrate.py
-"""
-
 import os
 import subprocess
 import sys
