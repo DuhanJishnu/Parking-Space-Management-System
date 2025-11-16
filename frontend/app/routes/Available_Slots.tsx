@@ -11,6 +11,16 @@ interface CardProps {
 }
 
 export default function Available_Slots() {
+  // let map: google.maps.Map;
+  // const center: google.maps.LatLngLiteral = { lat: 30, lng: -110 };
+
+  // function initMap(): void {
+  //   map = new google.maps.Map(document.getElementById("map") as HTMLElement, {
+  //     center,
+  //     zoom: 8,
+  //   });
+  // }
+
   const lots: CardProps[] = [
     { area: "Lot A", vehicleType: "Car", available: 12, total: 20 },
     { area: "Lot B", vehicleType: "Bike", available: 5, total: 10 },
@@ -26,12 +36,22 @@ export default function Available_Slots() {
 
   const location = useLocation();
   const { coords, vehicleNumber } = location.state || {};
-  useEffect(()=>console.log( "Coords in available : ", coords, " vehicle no : ", vehicleNumber ),[])
+  useEffect(
+    () =>
+      console.log(
+        "Coords in available : ",
+        coords,
+        " vehicle no : ",
+        vehicleNumber
+      ),
+    []
+  );
   const navigate = useNavigate();
 
   return (
-     <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#111827] to-[#1f2937] flex flex-col items-center justify-start p-4">
+    <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#111827] to-[#1f2937] flex flex-col items-center justify-start p-4">
       {/* Go Back Button */}
+      
       <div className="w-full flex items-center mb-4">
         <button
           onClick={() => navigate(-1)}
