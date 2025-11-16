@@ -232,7 +232,6 @@ http://localhost:5000/api
       "id": 1,
       "name": "Admin User",
       "contact_no": "+1234567890",
-      "address": null,
       "role": "admin",
       "created_at": "2023-10-01T10:00:00",
       "updated_at": "2023-10-01T10:00:00"
@@ -251,8 +250,7 @@ http://localhost:5000/api
 {
   "name": "John Doe",
   "contact_no": "+1234567890",
-  "role": "customer",
-  "address": "123 Main St"
+  "role": "customer"
 }
 ```
 
@@ -535,7 +533,6 @@ http://localhost:5000/api
   "id": 1,
   "name": "John Doe",
   "contact_no": "+1234567890",
-  "address": "123 Main St",
   "role": "customer",
   "created_at": "2023-10-01T10:00:00",
   "updated_at": "2023-10-01T10:00:00"

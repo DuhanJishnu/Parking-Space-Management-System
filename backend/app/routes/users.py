@@ -63,7 +63,6 @@ def create_user():
         user = User(
             name=data['name'],
             contact_no=data['contact_no'],
-            address=data.get('address'),
             role=UserRole(data.get('role', 'customer'))
         )
         
@@ -94,8 +93,6 @@ def update_user(user_id):
             user.name = data['name']
         if 'contact_no' in data:
             user.contact_no = data['contact_no']
-        if 'address' in data:
-            user.address = data['address']
         if 'role' in data:
             user.role = UserRole(data['role'])
         

@@ -13,7 +13,6 @@ class User(BaseModel):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     contact_no = db.Column(db.String(20), nullable=False)
-    address = db.Column(db.String(200))
     role = db.Column(db.Enum(UserRole), default=UserRole.CUSTOMER)
     
     # Relationships
@@ -24,7 +23,6 @@ class User(BaseModel):
             'id': self.id,
             'name': self.name,
             'contact_no': self.contact_no,
-            'address': self.address,
             'role': self.role.value,
             'created_at': self.created_at.isoformat(),
             'updated_at': self.updated_at.isoformat()
