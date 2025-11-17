@@ -11,41 +11,21 @@ interface CardProps {
 }
 
 export default function Available_Slots() {
-  // let map: google.maps.Map;
-  // const center: google.maps.LatLngLiteral = { lat: 30, lng: -110 };
 
-  // function initMap(): void {
-  //   map = new google.maps.Map(document.getElementById("map") as HTMLElement, {
-  //     center,
-  //     zoom: 8,
-  //   });
-  // }
+    const location = useLocation();
+    const { coords, vehicleNumber, availableSpaces } = location.state || {};
 
-  const lots: CardProps[] = [
-    { area: "Lot A", vehicleType: "Car", available: 12, total: 20 },
-    { area: "Lot B", vehicleType: "Bike", available: 5, total: 10 },
-    { area: "Lot C", vehicleType: "Car", available: 8, total: 15 },
-    { area: "Lot D", vehicleType: "Car", available: 2, total: 10 },
-    { area: "Lot E", vehicleType: "Car", available: 18, total: 25 },
-    { area: "Lot F", vehicleType: "Bike", available: 15, total: 30 },
-    { area: "Lot G", vehicleType: "Car", available: 5, total: 25 },
-    { area: "Lot H", vehicleType: "Bike", available: 20, total: 25 },
-    { area: "Lot I", vehicleType: "Car", available: 10, total: 10 },
-    { area: "Lot J", vehicleType: "Car", available: 1, total: 5 },
-  ];
+  useEffect(() => {
+    console.log(
+      "Coords in available : ",
+      coords,
+      " vehicle no : ",
+      vehicleNumber,
+      " available spaces : ",
+      availableSpaces
+    );
+  }, [coords, vehicleNumber, availableSpaces]);
 
-  const location = useLocation();
-  const { coords, vehicleNumber } = location.state || {};
-  useEffect(
-    () =>
-      console.log(
-        "Coords in available : ",
-        coords,
-        " vehicle no : ",
-        vehicleNumber
-      ),
-    []
-  );
   const navigate = useNavigate();
 
   return (
@@ -68,9 +48,19 @@ export default function Available_Slots() {
 
       {/* Cards */}
       <div className="flex flex-col gap-3 w-full max-w-md">
-        {lots.map((lot, idx) => (
-          <PLotCards key={idx} {...lot} />
-        ))}
+        {availableSpaces && availableSpaces.length > 0 ? (
+          availableSpaces.map((lot: any, idx: number) => (
+            <PLotCards
+              key={idx}
+              area={lot.name}
+              vehicleType={lot.vehicle_type}
+              available={lot.available_spaces}
+              total={lot.total_spaces}
+            />
+          ))
+        ) : (
+          <p className="text-white text-center">No available spaces found.</p>
+        )}
       </div>
     </div>
   );

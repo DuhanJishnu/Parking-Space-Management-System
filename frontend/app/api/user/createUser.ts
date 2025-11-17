@@ -2,7 +2,7 @@ import API from "../axiosInstance";
 
 export const createUser = async (payload: {
   name: string;
-  phone_number: string;
+  contact_no: string;
 }) => {
   const res = await API.post("/users/", payload);
   return res.data;

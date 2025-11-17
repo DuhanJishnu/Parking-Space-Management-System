@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router";
 import { UserContext } from "../context/User";
 import logo from "../assets/logo.jpeg";
+import { createUser } from "~/api/user/createUser";
 
 const Login = () => {
   const [name, setName] = useState("");
@@ -9,10 +10,13 @@ const Login = () => {
   const { setUser } = useContext(UserContext);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (name && contact) {
-      setUser({ name, contact });
+      const payload = {name , contact_no : contact}
+      const res = await createUser(payload);
+      console.log( "res from create user : " , res.data);
+      setUser(res.data);
       navigate("/home");
     }
   };

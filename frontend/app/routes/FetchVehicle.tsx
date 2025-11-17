@@ -11,11 +11,11 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export default function Home() {
+export default function SelectVehicle() {
   const navigate = useNavigate();
 
-  const handleOptionSelect = (path: string) => {
-    navigate(path);
+  const handleVehicleSelect = (v_type: string) => {
+    navigate(`/details/${v_type}`);
   };
 
   return (
@@ -35,24 +35,37 @@ export default function Home() {
       {/* Title */}
       <div className="text-center mt-8">
         <h2 className="text-3xl font-bold text-vsyellow drop-shadow-md">
-          What would you like to do?
+          Select Vehicle Type
         </h2>
+        <p className="text-gray-300 text-base mt-2">
+          Choose your mode of parking below
+        </p>
       </div>
 
       {/* Buttons */}
       <div className="flex flex-col w-full items-center mt-10 space-y-6">
         <button
-          onClick={() => handleOptionSelect("/select-vehicle")}
-          className="w-64 flex items-center justify-center bg-gradient-to-r from-[#facc15] to-[#f59e0b] rounded-2xl px-6 py-3 shadow-lg active:scale-95 transition-transform duration-150"
+          onClick={() => handleVehicleSelect("bike")}
+          className="w-64 flex items-center justify-between bg-gradient-to-r from-[#facc15] to-[#f59e0b] rounded-2xl px-6 py-3 shadow-lg active:scale-95 transition-transform duration-150"
         >
-          <span className="text-xl font-semibold tracking-wide">Park Your Vehicle</span>
+          <span className="text-xl font-semibold tracking-wide">Bike</span>
+          <img
+            src={bike}
+            alt="Bike"
+            className="w-16 object-contain"
+          />
         </button>
-        <p className="font-bold text-2xl">OR</p>
+      <p className="font-bold text-2xl">OR</p>
         <button
-          onClick={() => handleOptionSelect("/fetch-vehicle")}
-          className="w-64 flex items-center justify-center bg-gradient-to-r from-[#facc15] to-[#f59e0b] rounded-2xl px-6 py-3 shadow-lg active:scale-95 transition-transform duration-150"
+          onClick={() => handleVehicleSelect("car")}
+          className="w-64 flex items-center justify-between bg-gradient-to-r from-[#facc15] to-[#f59e0b] rounded-2xl px-6 py-3 shadow-lg active:scale-95 transition-transform duration-150"
         >
-          <span className="text-xl font-semibold tracking-wide">Fetch Your Vehicle</span>
+          <span className="text-xl font-semibold tracking-wide">Car</span>
+          <img
+            src={car}
+            alt="Car"
+            className="w-16  object-contain"
+          />
         </button>
       </div>
 
