@@ -21,18 +21,18 @@ export default function FindingScreen() {
       </motion.div>
 
       {/* Animated Searching Text */}
-      <motion.h1
-        className="text-xl sm:text-4xl font-bold tracking-widest text-center"
-        animate={{
-          opacity: [1, 0.5, 1],
-        }}
-        transition={{
-          repeat: Infinity,
-          duration: 1.2,
-          ease: "easeInOut",
-        }}
-      >
-        Searching<span className="text-yellow-400">...</span>
+      <motion.h1 className="text-xl sm:text-4xl font-bold tracking-widest text-center">
+        <motion.span
+          animate={{
+            opacity: [1, 0.3, 1],
+          }}
+          transition={{
+            repeat: Infinity,
+            duration: 1.5,
+            ease: "easeInOut",
+          }}
+        >
+        </motion.span>
       </motion.h1>
 
       {/* Subtle rotating background circles for depth */}

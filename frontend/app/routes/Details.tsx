@@ -62,7 +62,7 @@ export default function Details() {
   useEffect(() => {
     async function fetchVehicles() {
       try {
-        const userVehicles = await getUserVehicles(15);
+        const userVehicles = await getUserVehicles(15, 'active');
         setVehicles(userVehicles?.data || []);
       } catch (error) {
         console.error("Failed to fetch vehicles", error);

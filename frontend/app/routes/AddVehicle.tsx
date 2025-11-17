@@ -15,7 +15,7 @@ export default function AddVehicle() {
     setLoading(true);
 
     try {
-        const payload = {user_id : 15, vehicle_number : vehicleNumber, vehicle_type : vehicleType};
+        const payload = {user_id : 15, vehicle_id : vehicleNumber, vehicle_type : vehicleType};
       await registerVehicle(payload);
       navigate(-1); // Go back to previous page
     } catch (error) {
