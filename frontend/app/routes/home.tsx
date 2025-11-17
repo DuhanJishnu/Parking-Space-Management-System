@@ -42,7 +42,7 @@ export default function Home() {
       {/* Buttons */}
       <div className="flex flex-col w-full items-center mt-10 space-y-6">
         <button
-          onClick={() => handleOptionSelect("/select-vehicle")}
+          onClick={() => handleOptionSelect("/details")}
           className="w-64 flex items-center justify-center bg-gradient-to-r from-[#facc15] to-[#f59e0b] rounded-2xl px-6 py-3 shadow-lg active:scale-95 transition-transform duration-150"
         >
           <span className="text-xl font-semibold tracking-wide">Park Your Vehicle</span>

@@ -5,7 +5,8 @@ export default [
     route("/home", "routes/Home.tsx"),
     route("/select-vehicle", "routes/SelectVehicle.tsx"),
     route("/fetch-vehicle", "routes/FetchVehicle.tsx"),
-    route("/details/:v_type","routes/Details.tsx"),
-    route("/available","routes/Available_Slots.tsx")
+    route("/details/","routes/Details.tsx"),
+    route("/available","routes/Available_Slots.tsx"),
+    route("/add-vehicle", "routes/AddVehicle.tsx")
 ] satisfies RouteConfig;
 

@@ -5,6 +5,7 @@ import car from "../assets/car.png";
 import bike from "../assets/sportbike.png";
 import { getUserVehicles } from "~/api/user/getUserVehicle";
 import { useEffect, useState } from "react";
+import UserCarCard from "~/components/UserCar";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -20,7 +21,7 @@ export default function FetchVehicle() {
     { id: number; vehicle_id: string; vehicle_type: string }[]
   >([]);
 
-  const [loading, setLoading] = useState(true); // 🔥 loading state
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchVehicles() {
@@ -30,7 +31,7 @@ export default function FetchVehicle() {
       } catch (error) {
         console.error("Failed to fetch vehicles", error);
       } finally {
-        setLoading(false); // 🔥 stop loading
+        setLoading(false);
       }
     }
     fetchVehicles();
@@ -38,8 +39,7 @@ export default function FetchVehicle() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-between bg-gradient-to-b from-[#0a0a0a] via-[#111827] to-[#1f2937] text-white font-[Baloo Bhai 2] px-6 py-8">
-      
-      
+
       <div className="flex flex-col items-center mt-6">
         <img
           src={logo}
@@ -54,45 +54,31 @@ export default function FetchVehicle() {
       {/* Content Section */}
       <div className="mt-8 w-full flex flex-col items-center gap-4">
 
-        {/* 🔥 Loading Screen */}
+        {/* Loading */}
         {loading && (
           <div className="text-vsyellow text-xl animate-pulse">
             Loading your vehicles...
           </div>
         )}
 
-        {/* 🔥 No Vehicles Found */}
+        {/* No Vehicles */}
         {!loading && vehicles.length === 0 && (
           <p className="text-amber-200 text-xl">No Vehicles Found</p>
         )}
 
-        {/* 🔥 Vehicles List */}
+        {/* Vehicles List */}
         {!loading &&
           vehicles.length > 0 &&
           vehicles.map((v) => (
-            <div
+            <UserCarCard
               key={v.id}
-              className="w-full max-w-md bg-[#1f2937] rounded-xl p-4 flex items-center gap-4 shadow-md border border-gray-700"
-            >
-              <img
-                src={v.vehicle_type === "4W" ? car : bike}
-                alt="vehicle"
-                className="w-14 h-14"
-              />
-
-              <div>
-                <p className="text-lg font-semibold text-vsyellow">
-                  {v.vehicle_id}
-                </p>
-                <p className="text-sm text-gray-300">
-                  {v.vehicle_type === "4W" ? "Four Wheeler" : "Two Wheeler"}
-                </p>
-              </div>
-            </div>
+              vehicle_id={v.vehicle_id}
+              vehicle_type={v.vehicle_type === "4W" ? "4W" : "2W"}
+            />
           ))}
-      </div>
 
-      {/* Footer */}
+      </div> {/* ✅ This was missing */}
+
       <p className="text-gray-400 text-sm mt-12 mb-4">
         © 2025 NIT Meghalaya — All Rights Reserved
       </p>
