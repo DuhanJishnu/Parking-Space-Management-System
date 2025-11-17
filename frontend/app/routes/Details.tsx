@@ -9,7 +9,7 @@ import { getUserVehicles } from "~/api/user/getUserVehicle";
 import UserCarCardPark from "~/components/UserCarPark";
 
 export default function Details() {
-  // const { v_type } = useParams<{ v_type: string }>();
+ 
   const navigate = useNavigate();
 
   const { user } = useContext(UserContext);
@@ -48,6 +48,14 @@ export default function Details() {
       "\n Coords: ",
       coords
     );
+    navigate("/available-slots", {
+      state: {
+        coords,
+        vehicleNumber,
+        vehicleType: "Car",
+      },
+    });
+    setLoading(false);
   };
 
   // FETCH USER VEHICLES
@@ -67,11 +75,11 @@ export default function Details() {
 
   const handleVehicleClick = (vnum: string) => {
     console.log("Clicked vehicle:", vnum);
-    setVehicleNumber(vnum); // auto-fill input
+    setVehicleNumber(vnum);
   };
 
   return (
-    <div className="h-screen flex flex-col items-center justify-center bg-gradient-to-b from-[#0a0a0a] via-[#111827] to-[#1f2937] text-white font-[Baloo Bhai 2] px-6 py-8">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-[#0a0a0a] via-[#111827] to-[#1f2937] text-white font-[Baloo Bhai 2] px-6 py-8">
       {/* LOCATION PROMPT */}
       {startLocationRequest && (
         <RequestLocation

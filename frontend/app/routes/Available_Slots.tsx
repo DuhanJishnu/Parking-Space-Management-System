@@ -1,37 +1,41 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import PLotCards from "~/components/P_Lot_Cards";
 import { useNavigate, useLocation } from "react-router";
 import { ArrowLeft } from "lucide-react";
 
-interface CardProps {
-  area: string;
-  vehicleType: "Car" | "Bike";
-  available: number;
-  total: number;
-}
+import FindingScreen from "~/components/Find_Screen";
+
+import { getParkingLots } from "~/api/parkingLots/getLots";
 
 export default function Available_Slots() {
-
-    const location = useLocation();
-    const { coords, vehicleNumber, availableSpaces } = location.state || {};
-
-  useEffect(() => {
-    console.log(
-      "Coords in available : ",
-      coords,
-      " vehicle no : ",
-      vehicleNumber,
-      " available spaces : ",
-      availableSpaces
-    );
-  }, [coords, vehicleNumber, availableSpaces]);
-
+  const location = useLocation();
   const navigate = useNavigate();
 
+  const { coords, vehicleNumber, vehicleType } = location.state || {};
+
+  const [availableSpaces, setAvailableSpaces] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!coords || !vehicleNumber) return;
+
+    async function fetchSlots() {
+      try {
+        const response = await getParkingLots();
+        setAvailableSpaces(response.data || []);
+      } catch (err) {
+        console.error("Failed to fetch available slots", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchSlots();
+  }, [coords, vehicleNumber]);
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0a0a0a] via-[#111827] to-[#1f2937] flex flex-col items-center justify-start p-4">
-      {/* Go Back Button */}
-      
+    <div className="h-screen flex flex-col bg-gradient-to-b from-[#0a0a0a] via-[#111827] to-[#1f2937]  justify-center items-center p-4">
+      {/* Go Back */}
       <div className="w-full flex items-center mb-4">
         <button
           onClick={() => navigate(-1)}
@@ -41,25 +45,41 @@ export default function Available_Slots() {
         </button>
       </div>
 
-      {/* Page Title */}
+      {/* Title */}
       <h1 className="text-3xl font-bold text-yellow-400 mb-6">
         Available Parking Lots
       </h1>
 
+      {/* Loading */}
+      {loading && (
+        <FindingScreen/>
+      )}
+
       {/* Cards */}
       <div className="flex flex-col gap-3 w-full max-w-md">
-        {availableSpaces && availableSpaces.length > 0 ? (
-          availableSpaces.map((lot: any, idx: number) => (
-            <PLotCards
-              key={idx}
-              area={lot.name}
-              vehicleType={lot.vehicle_type}
-              available={lot.available_spaces}
-              total={lot.total_spaces}
-            />
-          ))
+        {!loading && availableSpaces.length > 0 ? (
+          availableSpaces.map((lot: any, idx: number) => {
+            const available =
+              vehicleType === "Car"
+                ? lot.available_4w_spaces
+                : lot.available_2w_spaces;
+
+            return (
+              <PLotCards
+                key={idx}
+                area={lot.name}
+                vehicleType={vehicleType}
+                available={available}
+                total={lot.capacity}
+              />
+            );
+          })
         ) : (
-          <p className="text-white text-center">No available spaces found.</p>
+          !loading && (
+            <p className="text-white text-center">
+              No available spaces found.
+            </p>
+          )
         )}
       </div>
     </div>
