@@ -15,6 +15,11 @@ class User(BaseModel):
     contact_no = db.Column(db.String(20), nullable=False)
     role = db.Column(db.Enum(UserRole), default=UserRole.CUSTOMER)
     
+    # Add unique constraint for name and contact_no combination
+    __table_args__ = (
+        db.UniqueConstraint('name', 'contact_no', name='_name_contact_uc'),
+    )
+    
     # Relationships
     vehicles = db.relationship('Vehicle', backref='owner', lazy=True)
     
@@ -29,4 +34,4 @@ class User(BaseModel):
         }
     
     def __repr__(self):
-        return f'<User {self.name} - {self.role.value}>'
+        return f'<User {self.name} - {self.contact_no} - {self.role.value}>'

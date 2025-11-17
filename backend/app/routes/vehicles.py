@@ -63,16 +63,16 @@ def create_vehicle():
                     'error': f'Missing required field: {field}'
                 }), 400
         
-        # Check if vehicle already exists
-        existing_vehicle = Vehicle.query.get(data['vehicle_id'])
+        # Check if vehicle already exists - FIXED: query by vehicle_id field, not primary key
+        existing_vehicle = Vehicle.query.filter_by(vehicle_id=data['vehicle_id']).first()
         if existing_vehicle:
             return jsonify({
                 'success': False,
-                'error': 'Vehicle with this ID already exists'
+                'error': 'Vehicle with this registration number already exists'
             }), 400
         
         # Check if owner exists (if provided)
-        owner_id = data.get('owner_id')
+        owner_id = data.get('owner_id') or data.get('user_id')  # Handle both user_id and owner_id
         if owner_id:
             owner = User.query.get(owner_id)
             if not owner:

@@ -13,7 +13,7 @@ def get_occupancies():
     try:
         status = request.args.get('status')
         space_id = request.args.get('space_id', type=int)
-        vehicle_id = request.args.get('vehicle_id', type=int)  # Now expects integer vehicle ID
+        vehicle_id = request.args.get('vehicle_id', type=int)
         
         query = Occupancy.query
         
@@ -73,7 +73,7 @@ def get_occupancy(occupancy_id):
 
 @occupancy_bp.route('/check-in', methods=['POST'])
 def check_in_vehicle():
-    """Check in a vehicle to a parking space"""
+    """Check in a vehicle to a parking space (combines reservation and check-in)"""
     try:
         data = request.get_json()
         
@@ -89,22 +89,38 @@ def check_in_vehicle():
         if 'entry_time' in data:
             entry_time = datetime.fromisoformat(data['entry_time'])
         
-        occupancy, message = ParkingService.check_in_vehicle(
+        # First, reserve the space
+        space, reserve_message = OccupancyService.reserve_space(
             space_id=data['space_id'],
-            vehicle_registration=data['vehicle_registration'],  # Changed parameter name
+            reservation_duration_minutes=0  # Set to 0 to indicate immediate check-in
+        )
+        
+        if not space:
+            return jsonify({
+                'success': False,
+                'error': reserve_message
+            }), 400
+        
+        # Then check in the vehicle
+        occupancy, checkin_message = ParkingService.check_in_vehicle(
+            space_id=data['space_id'],
+            vehicle_registration=data['vehicle_registration'],
             entry_time=entry_time
         )
         
         if not occupancy:
             return jsonify({
                 'success': False,
-                'error': message
+                'error': checkin_message
             }), 400
         
         return jsonify({
             'success': True,
-            'data': occupancy.to_dict(),
-            'message': message
+            'data': {
+                'space': space.to_dict(),
+                'occupancy': occupancy.to_dict()
+            },
+            'message': f"Space reserved and vehicle checked in successfully: {checkin_message}"
         }), 201
         
     except Exception as e:
@@ -150,13 +166,13 @@ def check_out_vehicle(occupancy_id):
             'error': str(e)
         }), 500
 
-@occupancy_bp.route('/reserve', methods=['POST'])
-def reserve_space():
-    """Reserve a parking space"""
+@occupancy_bp.route('/reserve-and-checkin', methods=['POST'])
+def reserve_and_checkin():
+    """Reserve a parking space and check in vehicle in one operation"""
     try:
         data = request.get_json()
         
-        required_fields = ['space_id']
+        required_fields = ['space_id', 'vehicle_registration']
         for field in required_fields:
             if field not in data:
                 return jsonify({
@@ -164,14 +180,18 @@ def reserve_space():
                     'error': f'Missing required field: {field}'
                 }), 400
         
-        duration = data.get('duration_minutes', 30)
+        entry_time = None
+        if 'entry_time' in data:
+            entry_time = datetime.fromisoformat(data['entry_time'])
         
-        space, message = OccupancyService.reserve_space(
+        # Use the combined service method
+        result, message = OccupancyService.reserve_and_checkin(
             space_id=data['space_id'],
-            reservation_duration_minutes=duration
+            vehicle_registration=data['vehicle_registration'],
+            entry_time=entry_time
         )
         
-        if not space:
+        if not result:
             return jsonify({
                 'success': False,
                 'error': message
@@ -179,9 +199,12 @@ def reserve_space():
         
         return jsonify({
             'success': True,
-            'data': space.to_dict(),
+            'data': {
+                'space': result['space'].to_dict(),
+                'occupancy': result['occupancy'].to_dict()
+            },
             'message': message
-        })
+        }), 201
         
     except Exception as e:
         return jsonify({

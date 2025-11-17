@@ -19,7 +19,7 @@ class OccupancyService:
         return query.all()
     
     @staticmethod
-    def reserve_space(space_id, reservation_duration_minutes=30):
+    def reserve_space(space_id):
         """Reserve a parking space for a limited time"""
         space = ParkingSpace.query.get(space_id)
         if not space or space.state != SpaceState.UNOCCUPIED:
@@ -29,7 +29,7 @@ class OccupancyService:
         # In a real system, you'd store reservation expiry time
         
         db.session.commit()
-        return space, f"Space reserved for {reservation_duration_minutes} minutes"
+        return space, None
     
     @staticmethod
     def get_occupancy_history(vehicle_id=None, start_date=None, end_date=None):
@@ -46,3 +46,47 @@ class OccupancyService:
             query = query.filter(Occupancy.entry_time <= end_date)
         
         return query.order_by(Occupancy.entry_time.desc()).all()
+    
+    # In your OccupancyService class
+    @classmethod
+    def reserve_and_checkin(cls, space_id, vehicle_registration, entry_time=None):
+        """Reserve space and check in vehicle in one operation"""
+        try:
+            # Reserve the space (you might need to modify your reserve_space method to handle immediate check-in)
+            space, reserve_message = cls.reserve_space(
+                space_id=space_id,
+                reservation_duration_minutes=0  # 0 indicates immediate check-in
+            )
+            
+            if not space:
+                return None, reserve_message
+            
+            # Check in the vehicle
+            from app.services.parking_service import ParkingService
+            occupancy, checkin_message = ParkingService.check_in_vehicle(
+                space_id=space_id,
+                vehicle_registration=vehicle_registration,
+                entry_time=entry_time
+            )
+            
+            if not occupancy:
+                # If check-in fails, release the reservation
+                cls.release_reservation(space_id)
+                return None, checkin_message
+            
+            return {
+                'space': space,
+                'occupancy': occupancy
+            }, "Space reserved and vehicle checked in successfully"
+            
+        except Exception as e:
+            # Release reservation if any error occurs
+            cls.release_reservation(space_id)
+            return None, str(e)
+
+    @classmethod
+    def release_reservation(cls, space_id):
+        """Release a reservation on a space"""
+        # Implementation depends on your reservation system
+        # This would typically set the space status back to available
+        pass

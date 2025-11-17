@@ -10,7 +10,7 @@ class ParkingLot(BaseModel):
     location = db.Column(db.String(200), nullable=False)
     capacity = db.Column(db.Integer, nullable=False)
     base_rate = db.Column(db.Numeric(10, 2), nullable=False)  # hourly rate
-    geo_location = db.Column(db.String(100))  # Could be extended to PostGIS
+    geo_location = db.Column(db.String(100))
     
     # Relationships
     parking_spaces = db.relationship('ParkingSpace', backref='parking_lot', lazy=True, cascade='all, delete-orphan')
@@ -45,7 +45,6 @@ class ParkingLot(BaseModel):
         data = self.to_dict()
         data['available_2w_spaces'] = self.get_available_spaces_count(SpaceType.TWO_WHEELER)
         data['available_4w_spaces'] = self.get_available_spaces_count(SpaceType.FOUR_WHEELER)
-        data['available_ev_spaces'] = self.get_available_spaces_count(SpaceType.EV)
         data['total_available_spaces'] = self.get_available_spaces_count()
         return data
 

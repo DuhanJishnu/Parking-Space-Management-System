@@ -5,9 +5,6 @@ import enum
 class SpaceType(enum.Enum):
     TWO_WHEELER = '2W'
     FOUR_WHEELER = '4W'
-    EV = 'EV'
-    VIP = 'VIP'
-    DISABLED = 'DISABLED'
 
 class SpaceState(enum.Enum):
     OCCUPIED = 'occupied'

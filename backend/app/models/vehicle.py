@@ -5,7 +5,6 @@ import enum
 class VehicleType(enum.Enum):
     TWO_WHEELER = '2W'
     FOUR_WHEELER = '4W'
-    EV = 'EV'
 
 class Vehicle(BaseModel):
     __tablename__ = 'vehicles'

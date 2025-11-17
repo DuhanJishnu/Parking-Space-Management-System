@@ -583,9 +583,6 @@ http://localhost:5000/api
 ### Space Types
 - `2W` - Two-wheeler (motorcycles, scooters)
 - `4W` - Four-wheeler (cars, SUVs)
-- `EV` - Electric Vehicle
-- `VIP` - VIP parking
-- `DISABLED` - Disabled parking
 
 ### Space States
 - `occupied` - Currently occupied by a vehicle
@@ -596,7 +593,6 @@ http://localhost:5000/api
 ### Vehicle Types
 - `2W` - Two-wheeler
 - `4W` - Four-wheeler
-- `EV` - Electric Vehicle
 
 ### User Roles
 - `admin` - System administrator
