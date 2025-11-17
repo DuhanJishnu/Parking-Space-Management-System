@@ -1,10 +1,13 @@
 from flask import Flask
 from app.config import config
 from app.extensions import db, migrate, jwt
+from flask_cors import CORS
 
 def create_app(config_name='default'):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
+    
+    CORS(app)
     
     # Initialize extensions
     db.init_app(app)
