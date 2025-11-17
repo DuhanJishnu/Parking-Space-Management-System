@@ -3,7 +3,7 @@ import { Search } from "lucide-react";
 
 export default function FindingScreen() {
   return (
-    <div className="flex flex-col items-center justify-center h-full w-full  text-yellow-400 font-[Baloo Bhai 2] relative overflow-hidden">
+    <div className="flex flex-col items-center justify-center h-screen w-screen  text-yellow-400 font-[Baloo Bhai 2] relative overflow-hidden">
       
       <motion.div
         animate={{
@@ -15,7 +15,7 @@ export default function FindingScreen() {
           duration: 2,
           ease: "easeInOut",
         }}
-        className="mb-6"
+        className=""
       >
         <Search size={60} className="text-yellow-400 drop-shadow-xl" />
       </motion.div>

@@ -34,7 +34,7 @@ export default function Available_Slots() {
   }, [coords, vehicleNumber]);
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-b from-[#0a0a0a] via-[#111827] to-[#1f2937]  justify-center items-center p-4">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#0a0a0a] via-[#111827] to-[#1f2937]  justify-center items-center p-4">
       {/* Go Back */}
       <div className="w-full flex items-center mb-4">
         <button
@@ -46,16 +46,19 @@ export default function Available_Slots() {
       </div>
 
       {/* Title */}
-      <h1 className="text-3xl font-bold text-yellow-400 mb-6">
-        Available Parking Lots
-      </h1>
 
       {/* Loading */}
       {loading && (
         <FindingScreen/>
       )}
 
-      {/* Cards */}
+      { !loading && (
+        <>
+        
+        <h1 className="text-3xl font-bold text-yellow-400 mb-6">
+        Available Parking Lots
+      </h1>
+     
       <div className="flex flex-col gap-3 w-full max-w-md">
         {!loading && availableSpaces.length > 0 ? (
           availableSpaces.map((lot: any, idx: number) => {
@@ -82,6 +85,8 @@ export default function Available_Slots() {
           )
         )}
       </div>
+      </>
+    )}
     </div>
   );
 }

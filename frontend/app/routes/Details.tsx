@@ -107,9 +107,6 @@ export default function Details() {
             </h1>
             <p className="text-gray-300 text-sm mt-1">
               Selected Vehicle Type:{" "}
-              {/* <span className="capitalize text-vsyellow font-semibold">
-                {v_type || "N/A"}
-              </span> */}
             </p>
           </div>
 
