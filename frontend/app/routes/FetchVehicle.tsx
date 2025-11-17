@@ -3,6 +3,8 @@ import { useNavigate } from "react-router";
 import logo from "../assets/logo.jpeg";
 import car from "../assets/car.png";
 import bike from "../assets/sportbike.png";
+import { getUserVehicles } from "~/api/user/getUserVehicle";
+import { useEffect, useState } from "react";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -11,16 +13,33 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export default function SelectVehicle() {
+export default function FetchVehicle() {
   const navigate = useNavigate();
 
-  const handleVehicleSelect = (v_type: string) => {
-    navigate(`/details/${v_type}`);
-  };
+  const [vehicles, setVehicles] = useState<
+    { id: number; vehicle_id: string; vehicle_type: string }[]
+  >([]);
+
+  const [loading, setLoading] = useState(true); // 🔥 loading state
+
+  useEffect(() => {
+    async function fetchVehicles() {
+      try {
+        const userVehicles = await getUserVehicles(15);
+        setVehicles(userVehicles?.data || []);
+      } catch (error) {
+        console.error("Failed to fetch vehicles", error);
+      } finally {
+        setLoading(false); // 🔥 stop loading
+      }
+    }
+    fetchVehicles();
+  }, []);
 
   return (
-    <div className="min-h-screen h-fit flex flex-col items-center justify-between bg-gradient-to-b from-[#0a0a0a] via-[#111827] to-[#1f2937] text-white font-[Baloo Bhai 2] px-6 py-8">
-      {/* Logo */}
+    <div className="min-h-screen flex flex-col items-center justify-between bg-gradient-to-b from-[#0a0a0a] via-[#111827] to-[#1f2937] text-white font-[Baloo Bhai 2] px-6 py-8">
+      
+      
       <div className="flex flex-col items-center mt-6">
         <img
           src={logo}
@@ -28,45 +47,49 @@ export default function SelectVehicle() {
           className="w-24 h-24 rounded-full shadow-md border-2 border-vsyellow"
         />
         <h1 className="text-2xl mt-3 font-semibold text-vsyellow tracking-wide">
-          Parking Space
+          Your Vehicles
         </h1>
       </div>
 
-      {/* Title */}
-      <div className="text-center mt-8">
-        <h2 className="text-3xl font-bold text-vsyellow drop-shadow-md">
-          Select Vehicle Type
-        </h2>
-        <p className="text-gray-300 text-base mt-2">
-          Choose your mode of parking below
-        </p>
-      </div>
+      {/* Content Section */}
+      <div className="mt-8 w-full flex flex-col items-center gap-4">
 
-      {/* Buttons */}
-      <div className="flex flex-col w-full items-center mt-10 space-y-6">
-        <button
-          onClick={() => handleVehicleSelect("bike")}
-          className="w-64 flex items-center justify-between bg-gradient-to-r from-[#facc15] to-[#f59e0b] rounded-2xl px-6 py-3 shadow-lg active:scale-95 transition-transform duration-150"
-        >
-          <span className="text-xl font-semibold tracking-wide">Bike</span>
-          <img
-            src={bike}
-            alt="Bike"
-            className="w-16 object-contain"
-          />
-        </button>
-      <p className="font-bold text-2xl">OR</p>
-        <button
-          onClick={() => handleVehicleSelect("car")}
-          className="w-64 flex items-center justify-between bg-gradient-to-r from-[#facc15] to-[#f59e0b] rounded-2xl px-6 py-3 shadow-lg active:scale-95 transition-transform duration-150"
-        >
-          <span className="text-xl font-semibold tracking-wide">Car</span>
-          <img
-            src={car}
-            alt="Car"
-            className="w-16  object-contain"
-          />
-        </button>
+        {/* 🔥 Loading Screen */}
+        {loading && (
+          <div className="text-vsyellow text-xl animate-pulse">
+            Loading your vehicles...
+          </div>
+        )}
+
+        {/* 🔥 No Vehicles Found */}
+        {!loading && vehicles.length === 0 && (
+          <p className="text-amber-200 text-xl">No Vehicles Found</p>
+        )}
+
+        {/* 🔥 Vehicles List */}
+        {!loading &&
+          vehicles.length > 0 &&
+          vehicles.map((v) => (
+            <div
+              key={v.id}
+              className="w-full max-w-md bg-[#1f2937] rounded-xl p-4 flex items-center gap-4 shadow-md border border-gray-700"
+            >
+              <img
+                src={v.vehicle_type === "4W" ? car : bike}
+                alt="vehicle"
+                className="w-14 h-14"
+              />
+
+              <div>
+                <p className="text-lg font-semibold text-vsyellow">
+                  {v.vehicle_id}
+                </p>
+                <p className="text-sm text-gray-300">
+                  {v.vehicle_type === "4W" ? "Four Wheeler" : "Two Wheeler"}
+                </p>
+              </div>
+            </div>
+          ))}
       </div>
 
       {/* Footer */}

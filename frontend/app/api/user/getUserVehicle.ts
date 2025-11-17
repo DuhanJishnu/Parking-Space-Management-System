@@ -1,6 +1,7 @@
 import API from "../axiosInstance";
 
 export const getUserVehicles = async (userId: number) => {
-  const res = await API.get(`/users/${userId}/vehicles`);
+  const res = await API.get(`/users/15/vehicles`);
+  // const res = await API.get(`/users/${userId}/vehicles`);
   return res.data;
 };
