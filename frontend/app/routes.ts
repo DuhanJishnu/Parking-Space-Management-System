@@ -8,5 +8,6 @@ export default [
     route("/details/","routes/Details.tsx"),
     route("/add-vehicle", "routes/AddVehicle.tsx"),
     route("/available-slots", "routes/Available_Slots.tsx"),
+    route("/bills", "routes/BillingPage.tsx"),
 ] satisfies RouteConfig;
 

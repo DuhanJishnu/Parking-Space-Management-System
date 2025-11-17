@@ -45,14 +45,28 @@ export default function Home() {
           onClick={() => handleOptionSelect("/details")}
           className="w-64 flex items-center justify-center bg-gradient-to-r from-[#facc15] to-[#f59e0b] rounded-2xl px-6 py-3 shadow-lg active:scale-95 transition-transform duration-150"
         >
-          <span className="text-xl font-semibold tracking-wide">Park Your Vehicle</span>
+          <span className="text-xl font-semibold tracking-wide">
+            Park Your Vehicle
+          </span>
         </button>
         <p className="font-bold text-2xl">OR</p>
         <button
           onClick={() => handleOptionSelect("/fetch-vehicle")}
           className="w-64 flex items-center justify-center bg-gradient-to-r from-[#facc15] to-[#f59e0b] rounded-2xl px-6 py-3 shadow-lg active:scale-95 transition-transform duration-150"
         >
-          <span className="text-xl font-semibold tracking-wide">Fetch Your Vehicle</span>
+          <span className="text-xl font-semibold tracking-wide">
+            Fetch Your Vehicle
+          </span>
+        </button>
+
+        <button
+          onClick={() => handleOptionSelect("/bills")}
+          className="w-64 flex items-center justify-center bg-gradient-to-r from-[#facc15] to-[#f59e0b] 
+             rounded-2xl px-6 py-3 shadow-lg active:scale-95 transition-transform duration-150"
+        >
+          <span className="text-xl font-semibold tracking-wide">
+            View Bills
+          </span>
         </button>
       </div>
 
