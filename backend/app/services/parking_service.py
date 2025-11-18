@@ -22,53 +22,54 @@ class ParkingService:
     
     @staticmethod
     def check_in_vehicle(space_id, vehicle_registration=None, entry_time=None, user_id=None):
-        """Check in a vehicle to a parking space"""
         try:
-            # Check if space is available
+            # Check space availability
             space = ParkingSpace.query.get(space_id)
             if not space or space.state != SpaceState.UNOCCUPIED:
                 return None, "Space is not available"
-            
-            # Check if vehicle exists, if not create a temporary one (for walk-ins)
-            vehicle = Vehicle.query.filter_by(vehicle_id=vehicle_registration).first()
+
+            # Handle vehicle lookup or temporary creation
+            vehicle = None
+            if vehicle_registration:  # Only search when provided
+                vehicle = Vehicle.query.filter_by(vehicle_id=vehicle_registration).first()
+
             if not vehicle:
-                # For walk-ins, create a temporary vehicle record
+                temp_id = vehicle_registration or f"TEMP-{uuid4().hex[:8]}"
                 vehicle = Vehicle(
-                    vehicle_id=vehicle_registration,
-                    vehicle_type=VehicleType.FOUR_WHEELER  # Default type, can be improved
+                    vehicle_id=temp_id,
+                    vehicle_type=VehicleType.FOUR_WHEELER
                 )
                 db.session.add(vehicle)
-                db.session.flush()  # Get the vehicle ID without committing
-            
-            # Ensure entry_time is timezone-aware UTC
+                db.session.flush()
+
+            # Fix entry_time
             if entry_time is None:
                 entry_time = datetime.now(timezone.utc)
             elif entry_time.tzinfo is None:
                 entry_time = entry_time.replace(tzinfo=timezone.utc)
             else:
                 entry_time = entry_time.astimezone(timezone.utc)
-            
-            # Create occupancy record
+
+            # Create occupancy
             occupancy = Occupancy(
                 space_id=space_id,
-                vehicle_id=vehicle.id,  # Use the vehicle's integer ID
-                user_id=user_id or (vehicle.owner_id if vehicle.owner else None),  # Use provided user_id or vehicle owner
+                vehicle_id=vehicle.id,
+                user_id=user_id or (vehicle.owner_id if vehicle.owner else None),
                 entry_time=entry_time,
                 status=OccupancyStatus.ACTIVE
             )
-            
-            # Update space state
+
             space.state = SpaceState.OCCUPIED
-            
+
             db.session.add(occupancy)
             db.session.commit()
-            
+
             return occupancy, "Vehicle checked in successfully"
-            
+
         except SQLAlchemyError as e:
             db.session.rollback()
             return None, f"Database error: {str(e)}"
-    
+
     @staticmethod
     def check_out_vehicle(occupancy_id, exit_time=None):
         """Check out a vehicle and calculate charges"""
