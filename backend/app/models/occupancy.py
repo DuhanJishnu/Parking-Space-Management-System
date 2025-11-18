@@ -11,7 +11,7 @@ class Occupancy(BaseModel):
     
     id = db.Column(db.Integer, primary_key=True)
     space_id = db.Column(db.Integer, db.ForeignKey('parking_spaces.id'), nullable=False)
-    vehicle_id = db.Column(db.Integer, db.ForeignKey('vehicles.id'), nullable=False)  # Changed to reference vehicles.id
+    vehicle_id = db.Column(db.Integer, db.ForeignKey('vehicles.id'), nullable=True)  # Nullable for reservations
     entry_time = db.Column(db.DateTime, nullable=False)
     exit_time = db.Column(db.DateTime)
     status = db.Column(db.Enum(OccupancyStatus), default=OccupancyStatus.ACTIVE)

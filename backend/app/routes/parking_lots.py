@@ -30,7 +30,7 @@ def get_parking_lot(lot_id):
         lot = ParkingLot.query.get_or_404(lot_id)
         return jsonify({
             'success': True,
-            'data': lot.to_dict()
+            'data': lot.to_dict_with_availability()
         })
     except Exception as e:
         return jsonify({
