@@ -5,7 +5,7 @@ export const checkIn = async (payload: {
   vehicle_id: number;
   space_id: number;
 }) => {
-  const res = await API.post("/occupancy/check-in", payload);
+  const res = await API.post("/occupancy/check-in", {...payload ,vehicle_registration: payload.vehicle_id});
   console.log("Check-in log : , res.data");
   return res.data;
 };

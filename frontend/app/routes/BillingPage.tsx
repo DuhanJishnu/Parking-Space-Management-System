@@ -27,9 +27,9 @@ const BillingPage = () => {
         return;
       }
 
-      // Fetch bills for this specific customer (owner_id)
+      // Fetch bills for this specific customer (user_id)
       const response = await fetch(
-        `http://192.168.3.51:5000/api/billing/?owner_id=${user.id}`
+        `http://192.168.3.51:5000/api/billing/?user_id=${user.id}`
       );
       const data = await response.json();
       if (data.success) {
