@@ -8,7 +8,8 @@ import FindingScreen from "~/components/Find_Screen";
 
 import { getParkingLots } from "~/api/parkingLots/getLots";
 import { getSpacesByLot } from "~/api/parkingSpaces/getSpacesByLot";
-import { reserveSpace } from "~/api/occupancy/reserveSpace";
+//import { reserveSpace } from "~/api/occupancy/reserveSpace";
+import { checkIn } from "~/api/occupancy/checkin";
 
 export default function Available_Slots() {
   const { user } = useContext(UserContext);
@@ -63,7 +64,7 @@ export default function Available_Slots() {
 
       // Confirm with user
       const confirmed = window.confirm(
-        `✅ Found available ${randomSpace.space_type} space!\n\n` +
+        `Found available ${randomSpace.space_type} space!\n\n` +
           `Lot: ${lot.name}\n` +
           `Space ID: #${randomSpace.id}\n` +
           `Vehicle: ${vehicleNumber}\n\n` +
@@ -76,11 +77,12 @@ export default function Available_Slots() {
       }
 
       // Reserve the space
-      const reservePayload = {
+      const payload = {
+        user_id : user?.id,
+        vehicle_id : vehicleNumber,
         space_id: randomSpace.id,
       };
-
-      await reserveSpace(reservePayload);
+      const res = await checkIn(payload);
 
       alert(
         `🎉 Space reserved successfully!\n\nLot: ${lot.name}\nSpace #${randomSpace.id}`

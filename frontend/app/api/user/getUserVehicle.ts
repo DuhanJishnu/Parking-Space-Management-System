@@ -9,5 +9,6 @@ export const getUserVehicles = async (userId: number, occupancyFilter?: 'active'
   }
   
   const res = await API.get(url);
+  console.log("Res in getUserVehicle : ", res.data);
   return res.data;
 };

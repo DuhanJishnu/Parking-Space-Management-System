@@ -4,8 +4,9 @@ import logo from "../assets/logo.jpeg";
 import car from "../assets/car.png";
 import bike from "../assets/sportbike.png";
 import { getUserVehicles } from "~/api/user/getUserVehicle";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import UserCarCard from "~/components/UserCar";
+import { UserContext } from "~/context/User";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -15,7 +16,9 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function FetchVehicle() {
+
   const navigate = useNavigate();
+  const {user} = useContext(UserContext);
 
   const [vehicles, setVehicles] = useState<
     { id: number; vehicle_id: string; vehicle_type: string }[]
@@ -26,7 +29,7 @@ export default function FetchVehicle() {
   useEffect(() => {
     async function fetchVehicles() {
       try {
-        const userVehicles = await getUserVehicles(15, 'active');
+        const userVehicles = await getUserVehicles(user?.id, 'active');
         setVehicles(userVehicles?.data || []);
       } catch (error) {
         console.error("Failed to fetch vehicles", error);
