@@ -37,6 +37,7 @@ class ParkingService:
                 temp_id = vehicle_registration or f"TEMP-{uuid4().hex[:8]}"
                 vehicle = Vehicle(
                     vehicle_id=temp_id,
+                    owner_id=user_id,
                     vehicle_type=VehicleType.FOUR_WHEELER
                 )
                 db.session.add(vehicle)
