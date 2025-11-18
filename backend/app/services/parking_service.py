@@ -21,7 +21,7 @@ class ParkingService:
         return query.all()
     
     @staticmethod
-    def check_in_vehicle(space_id, vehicle_registration, entry_time=None, user_id=None):
+    def check_in_vehicle(space_id, vehicle_registration=None, entry_time=None, user_id=None):
         """Check in a vehicle to a parking space"""
         try:
             # Check if space is available
