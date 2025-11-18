@@ -11,7 +11,8 @@ import { getSpacesByLot } from "~/api/parkingSpaces/getSpacesByLot";
 import { reserveSpace } from "~/api/occupancy/reserveSpace";
 
 export default function Available_Slots() {
-  const { user } = useContext(UserContext);
+  const userContext = useContext(UserContext) as any;
+  const user = userContext?.user;
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -78,6 +79,7 @@ export default function Available_Slots() {
       // Reserve the space
       const reservePayload = {
         space_id: randomSpace.id,
+        user_id: user?.id,  // Add user_id to reserve
       };
 
       await reserveSpace(reservePayload);
@@ -115,7 +117,7 @@ export default function Available_Slots() {
   }, [coords, vehicleNumber]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#0a0a0a] via-[#111827] to-[#1f2937]  justify-center items-center p-4">
+    <div className="min-h-screen flex flex-col bg-linear-to-b from-[#0a0a0a] via-[#111827] to-[#1f2937]  justify-center items-center p-4">
       {/* Go Back */}
       <div className="w-full flex items-center mb-4">
         <button

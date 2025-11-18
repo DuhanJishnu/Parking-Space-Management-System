@@ -3,7 +3,7 @@ from app.models.billing import Billing, PaymentStatus
 from app.models.occupancy import Occupancy
 from app.models.parking_space import ParkingSpace
 from app.models.parking_lot import ParkingLot
-from datetime import datetime
+from datetime import datetime, timezone
 
 class BillingService:
     
@@ -11,11 +11,18 @@ class BillingService:
     def calculate_charges(occupancy):
         """Calculate parking charges based on duration and rates"""
         if not occupancy.exit_time:
-            exit_time = datetime.utcnow()
+            exit_time = datetime.now(timezone.utc)
         else:
             exit_time = occupancy.exit_time
         
-        duration_hours = (exit_time - occupancy.entry_time).total_seconds() / 3600
+        # Ensure entry_time is timezone-aware
+        entry_time = occupancy.entry_time
+        if entry_time.tzinfo is None:
+            entry_time = entry_time.replace(tzinfo=timezone.utc)
+        if exit_time.tzinfo is None:
+            exit_time = exit_time.replace(tzinfo=timezone.utc)
+        
+        duration_hours = (exit_time - entry_time).total_seconds() / 3600
         
         # Get space and lot information for rates
         space = ParkingSpace.query.get(occupancy.space_id)
@@ -34,10 +41,17 @@ class BillingService:
         return total_charge
     
     @staticmethod
-    def create_billing_record(occupancy_id, amount):
+    def create_billing_record(occupancy_id, amount, user_id=None):
         """Create a billing record for an occupancy"""
+        occupancy = Occupancy.query.get(occupancy_id)
+        
+        # If user_id not provided, try to get it from occupancy
+        if not user_id and occupancy:
+            user_id = occupancy.user_id
+        
         billing = Billing(
             occupancy_id=occupancy_id,
+            user_id=user_id,
             amount=amount,
             payment_status=PaymentStatus.PENDING
         )
@@ -53,7 +67,7 @@ class BillingService:
             return None, "Billing record not found"
         
         billing.payment_status = PaymentStatus.PAID
-        billing.payment_time = payment_time or datetime.utcnow()
+        billing.payment_time = payment_time or datetime.now(timezone.utc)
         
         db.session.commit()
         

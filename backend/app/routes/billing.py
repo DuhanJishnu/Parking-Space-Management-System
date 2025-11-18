@@ -11,6 +11,7 @@ def get_billing_records():
     try:
         payment_status = request.args.get('payment_status')
         occupancy_id = request.args.get('occupancy_id', type=int)
+        user_id = request.args.get('user_id', type=int)  # Filter by bill owner (user)
         
         query = Billing.query
         
@@ -18,6 +19,8 @@ def get_billing_records():
             query = query.filter(Billing.payment_status == PaymentStatus(payment_status))
         if occupancy_id:
             query = query.filter(Billing.occupancy_id == occupancy_id)
+        if user_id:
+            query = query.filter(Billing.user_id == user_id)
         
         billing_records = query.order_by(Billing.created_at.desc()).all()
         
@@ -52,12 +55,18 @@ def get_billing_record(billing_id):
 def process_payment(billing_id):
     """Process payment for a billing record"""
     try:
-        data = request.get_json()
+        from datetime import datetime, timezone
+        
+        data = request.get_json() or {}
         
         payment_time = None
         if 'payment_time' in data:
-            from datetime import datetime
             payment_time = datetime.fromisoformat(data['payment_time'])
+            # Ensure timezone-aware
+            if payment_time.tzinfo is None:
+                payment_time = payment_time.replace(tzinfo=timezone.utc)
+            else:
+                payment_time = payment_time.astimezone(timezone.utc)
         
         billing, message = BillingService.process_payment(
             billing_id=billing_id,

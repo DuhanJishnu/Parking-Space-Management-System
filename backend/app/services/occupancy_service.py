@@ -1,7 +1,7 @@
 from app.extensions import db
 from app.models.occupancy import Occupancy, OccupancyStatus
 from app.models.parking_space import ParkingSpace, SpaceState
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 class OccupancyService:
     
@@ -19,7 +19,7 @@ class OccupancyService:
         return query.all()
     
     @staticmethod
-    def reserve_space(space_id):
+    def reserve_space(space_id, user_id=None):
         """Reserve a parking space by creating an occupancy record and marking space as reserved"""
         space = ParkingSpace.query.get(space_id)
         if not space or space.state != SpaceState.UNOCCUPIED:
@@ -30,7 +30,8 @@ class OccupancyService:
             occupancy = Occupancy(
                 space_id=space_id,
                 vehicle_id=None,  # Will be updated when vehicle checks in
-                entry_time=datetime.now(),
+                user_id=user_id,  # Store the customer/user
+                entry_time=datetime.now(timezone.utc),
                 status=OccupancyStatus.ACTIVE
             )
             
@@ -63,11 +64,11 @@ class OccupancyService:
     
     # In your OccupancyService class
     @classmethod
-    def reserve_and_checkin(cls, space_id, vehicle_registration, entry_time=None):
+    def reserve_and_checkin(cls, space_id, vehicle_registration, entry_time=None, user_id=None):
         """Reserve space and check in vehicle in one operation"""
         try:
             # Reserve the space
-            space, reserve_message = cls.reserve_space(space_id=space_id)
+            space, reserve_message = cls.reserve_space(space_id=space_id, user_id=user_id)
             
             if not space:
                 return None, reserve_message
@@ -77,7 +78,8 @@ class OccupancyService:
             occupancy, checkin_message = ParkingService.check_in_vehicle(
                 space_id=space_id,
                 vehicle_registration=vehicle_registration,
-                entry_time=entry_time
+                entry_time=entry_time,
+                user_id=user_id
             )
             
             if not occupancy:
