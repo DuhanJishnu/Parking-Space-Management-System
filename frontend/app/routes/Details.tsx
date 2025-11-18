@@ -1,35 +1,27 @@
-import { useParams, useNavigate } from "react-router";
-import { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router";
+import { useState, useContext } from "react";
 import logo from "../assets/logo.jpeg";
 import RequestLocation from "~/components/Req_Location";
 import FindingScreen from "~/components/Find_Screen";
 import { UserContext } from "../context/User";
 
-import { getUserVehicles } from "~/api/user/getUserVehicle";
-import UserCarCardPark from "~/components/UserCarPark";
 
 export default function Details() {
- 
   const navigate = useNavigate();
 
   const { user } = useContext(UserContext);
 
   // VEHICLE SELECTION
   const [vehicleNumber, setVehicleNumber] = useState("");
+  const [vehicleType, setVehicleType] = useState<"4W" | "2W">("4W");
 
-  // USER VEHICLES FETCHING
-  const [vehicles, setVehicles] = useState<
-    { id: number; vehicle_id: string; vehicle_type: string }[]
-  >([]);
-  const [loadingVehicles, setLoadingVehicles] = useState(true);
-
-  // LOCATION / SUBMIT LOGIC
-  const [loading, setLoading] = useState(false);
-  const [startLocationRequest, setStartLocationRequest] = useState(false);
   const [positionCoords, setPositionCoords] = useState<{
     lat: number;
     lng: number;
   } | null>(null);
+
+  const [loading, setLoading] = useState(false);
+  const [startLocationRequest, setStartLocationRequest] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,8 +35,8 @@ export default function Details() {
     console.log(
       "User: ",
       user,
-      "\n Selected Vehicle No: ",
-      vehicleNumber,
+      "\n Selected Vehicle No. and Type : ",
+      vehicleNumber, ", ",vehicleType,
       "\n Coords: ",
       coords
     );
@@ -52,31 +44,12 @@ export default function Details() {
       state: {
         coords,
         vehicleNumber,
-        vehicleType: "Car",
+        vehicleType: vehicleType,
       },
     });
     setLoading(false);
   };
 
-  // FETCH USER VEHICLES
-  useEffect(() => {
-    async function fetchVehicles() {
-      try {
-        const userVehicles = await getUserVehicles(15, 'active');
-        setVehicles(userVehicles?.data || []);
-      } catch (error) {
-        console.error("Failed to fetch vehicles", error);
-      } finally {
-        setLoadingVehicles(false);
-      }
-    }
-    fetchVehicles();
-  }, []);
-
-  const handleVehicleClick = (vnum: string) => {
-    console.log("Clicked vehicle:", vnum);
-    setVehicleNumber(vnum);
-  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-[#0a0a0a] via-[#111827] to-[#1f2937] text-white font-[Baloo Bhai 2] px-6 py-8">
@@ -89,9 +62,6 @@ export default function Details() {
           }}
         />
       )}
-
-      {/* FINDING SCREEN */}
-      {loading && <FindingScreen />}
 
       {!loading && (
         <div>
@@ -106,44 +76,14 @@ export default function Details() {
               Parking Details
             </h1>
             <p className="text-gray-300 text-sm mt-1">
-              Selected Vehicle Type:{" "}
+              Selected Vehicle Type:{vehicleType=="4W" ? "Car" : "Bike"}
             </p>
-          </div>
-
-          {/* VEHICLES LIST */}
-          <div className="mt-6 flex flex-col items-center gap-4">
-            <button
-              onClick={() => navigate("/add-vehicle")}
-              className="px-4 py-2 bg-vsyellow text-white font-semibold rounded-xl shadow-yellow-300 shadow-md hover:scale-120 active:scale-95 transition-transform duration-150"
-            >
-              + Add Vehicle
-            </button>
-            {loadingVehicles && (
-              <p className="text-vsyellow text-lg animate-pulse">
-                Loading vehicles...
-              </p>
-            )}
-
-            {!loadingVehicles && vehicles.length === 0 && (
-              <p className="text-gray-300">No registered vehicles</p>
-            )}
-
-            {!loadingVehicles &&
-              vehicles.length > 0 &&
-              vehicles.map((v) => (
-                <UserCarCardPark
-                  key={v.id}
-                  vehicle_id={v.vehicle_id}
-                  vehicle_type={v.vehicle_type === "4W" ? "4W" : "2W"}
-                  onClick={() => handleVehicleClick(v.vehicle_id)}
-                />
-              ))}
           </div>
 
           {/* FORM */}
           <div className="w-full max-w-md mt-10 bg-[#1f2937]/80 backdrop-blur-md border border-gray-700 rounded-3xl shadow-2xl p-6 space-y-6">
             <form onSubmit={handleSubmit} className="flex flex-col space-y-5">
-              {/* VEHICLE INPUT */}
+              {/* VEHICLE NUMBER */}
               <div>
                 <label className="block text-sm text-gray-300 mb-1">
                   Vehicle Number
@@ -156,6 +96,39 @@ export default function Details() {
                   required
                   className="w-full px-4 py-3 rounded-xl bg-gray-800 text-white focus:ring-2 focus:ring-vsyellow outline-none placeholder-gray-500"
                 />
+              </div>
+
+              {/* VEHICLE TYPE */}
+              <div>
+                <label className="block text-sm text-gray-300 mb-2">
+                  Vehicle Type
+                </label>
+
+                <div className="flex gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setVehicleType("4W")}
+                    className={`flex-1 px-4 py-2 rounded-xl border ${
+                      vehicleType === "4W"
+                        ? "bg-yellow-400 text-black font-bold"
+                        : "bg-gray-800 text-gray-300 border-gray-600"
+                    }`}
+                  >
+                    Car (4W)
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setVehicleType("2W")}
+                    className={`flex-1 px-4 py-2 rounded-xl border ${
+                      vehicleType === "2W"
+                        ? "bg-yellow-400 text-black font-bold"
+                        : "bg-gray-800 text-gray-300 border-gray-600"
+                    }`}
+                  >
+                    Bike (2W)
+                  </button>
+                </div>
               </div>
 
               {/* SUBMIT */}
