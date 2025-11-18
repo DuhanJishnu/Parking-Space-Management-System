@@ -20,16 +20,30 @@ class OccupancyService:
     
     @staticmethod
     def reserve_space(space_id):
-        """Reserve a parking space for a limited time"""
+        """Reserve a parking space by creating an occupancy record and marking space as reserved"""
         space = ParkingSpace.query.get(space_id)
         if not space or space.state != SpaceState.UNOCCUPIED:
             return None, "Space is not available for reservation"
         
-        space.state = SpaceState.RESERVED
-        # In a real system, you'd store reservation expiry time
-        
-        db.session.commit()
-        return space, None
+        try:
+            # Create an occupancy record for the reservation
+            occupancy = Occupancy(
+                space_id=space_id,
+                vehicle_id=None,  # Will be updated when vehicle checks in
+                entry_time=datetime.now(),
+                status=OccupancyStatus.ACTIVE
+            )
+            
+            # Mark space as reserved
+            space.state = SpaceState.RESERVED
+            
+            db.session.add(occupancy)
+            db.session.commit()
+            
+            return space, f"Space reserved successfully"
+        except Exception as e:
+            db.session.rollback()
+            return None, f"Error reserving space: {str(e)}"
     
     @staticmethod
     def get_occupancy_history(vehicle_id=None, start_date=None, end_date=None):
@@ -52,11 +66,8 @@ class OccupancyService:
     def reserve_and_checkin(cls, space_id, vehicle_registration, entry_time=None):
         """Reserve space and check in vehicle in one operation"""
         try:
-            # Reserve the space (you might need to modify your reserve_space method to handle immediate check-in)
-            space, reserve_message = cls.reserve_space(
-                space_id=space_id,
-                reservation_duration_minutes=0  # 0 indicates immediate check-in
-            )
+            # Reserve the space
+            space, reserve_message = cls.reserve_space(space_id=space_id)
             
             if not space:
                 return None, reserve_message

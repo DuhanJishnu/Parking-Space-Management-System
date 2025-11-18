@@ -71,6 +71,43 @@ def get_occupancy(occupancy_id):
             'error': str(e)
         }), 404
 
+@occupancy_bp.route('/reserve', methods=['POST'])
+def reserve_space():
+    """Reserve a parking space temporarily"""
+    try:
+        data = request.get_json()
+        
+        required_fields = ['space_id']
+        for field in required_fields:
+            if field not in data:
+                return jsonify({
+                    'success': False,
+                    'error': f'Missing required field: {field}'
+                }), 400
+        
+        # Reserve the space
+        space, message = OccupancyService.reserve_space(
+            space_id=data['space_id']
+        )
+        
+        if not space:
+            return jsonify({
+                'success': False,
+                'error': message
+            }), 400
+        
+        return jsonify({
+            'success': True,
+            'data': space.to_dict(),
+            'message': message or 'Space reserved successfully'
+        }), 201
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
 @occupancy_bp.route('/check-in', methods=['POST'])
 def check_in_vehicle():
     """Check in a vehicle to a parking space (combines reservation and check-in)"""
