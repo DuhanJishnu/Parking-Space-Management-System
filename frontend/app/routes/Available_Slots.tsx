@@ -8,7 +8,7 @@ import FindingScreen from "~/components/Find_Screen";
 
 import { getParkingLots } from "~/api/parkingLots/getLots";
 import { getSpacesByLot } from "~/api/parkingSpaces/getSpacesByLot";
-//import { reserveSpace } from "~/api/occupancy/reserveSpace";
+
 import { checkIn } from "~/api/occupancy/checkin";
 
 export default function Available_Slots() {
@@ -57,7 +57,7 @@ export default function Available_Slots() {
           Math.floor(Math.random() * availableMatchingSpaces.length)
         ];
 
-      console.log("🅿️ Reserved Space Details:");
+      console.log("Reserved Space Details:");
       console.log("Parking Lot:", lot.name);
       console.log("Space ID:", randomSpace.id);
       console.log("Space Type:", randomSpace.space_type);
@@ -82,9 +82,11 @@ export default function Available_Slots() {
         user_id : user?.id,
         vehicle_id : vehicleNumber,
         space_id: randomSpace.id,
-        user_id: user?.id,  // Add user_id to reserve
+        vehicle_type : vehicleType
       };
       const res = await checkIn(payload);
+
+      
 
       alert(
         `🎉 Space reserved successfully!\n\nLot: ${lot.name}\nSpace #${randomSpace.id}`
