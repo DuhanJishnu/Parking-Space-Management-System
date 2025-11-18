@@ -6,5 +6,6 @@ export const checkIn = async (payload: {
   space_id: number;
 }) => {
   const res = await API.post("/occupancy/check-in", payload);
+  console.log("Check-in log : , res.data");
   return res.data;
 };
