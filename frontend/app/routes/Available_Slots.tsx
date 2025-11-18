@@ -7,7 +7,8 @@ import { UserContext } from "../context/User";
 import FindingScreen from "~/components/Find_Screen";
 
 import { getParkingLots } from "~/api/parkingLots/getLots";
-import { checkIn } from "~/api/occupancy/checkin";
+import { getSpacesByLot } from "~/api/parkingSpaces/getSpacesByLot";
+import { reserveSpace } from "~/api/occupancy/reserveSpace";
 
 export default function Available_Slots() {
   const { user } = useContext(UserContext);
@@ -22,14 +23,78 @@ export default function Available_Slots() {
   const [reservedLotId, setReservedLotId] = useState<number | null>(null);
 
   const handleReserve = async (lot: any) => {
-    const payload={user_id:user.id, vehicle_id:vehicleNumber, }
-    const res = await checkIn({})
-    console.log("Reservation Details:");
-    console.log("Parking Lot ID:", lot.id);
-    console.log("User:", user);
-    console.log("Vehicle Number:", vehicleNumber);
+    try {
+      setLoading(true);
 
-    setReservedLotId(lot.id);
+      // Fetch all spaces for this lot
+      const spacesResponse = await getSpacesByLot(lot.id);
+      const allSpaces = spacesResponse.data || [];
+
+      // Filter available spaces matching the vehicle type
+      const availableMatchingSpaces = allSpaces.filter((space: any) => {
+        const spaceTypeMatches =
+          vehicleType === "4W"
+            ? space.space_type === "4W"
+            : space.space_type === "2W";
+        const isUnoccupied = space.state === "unoccupied";
+
+        return spaceTypeMatches && isUnoccupied;
+      });
+
+      if (availableMatchingSpaces.length === 0) {
+        alert(
+          `❌ No available ${vehicleType} spaces in ${lot.name}. Please try another lot.`
+        );
+        setLoading(false);
+        return;
+      }
+
+      // Pick a random available space
+      const randomSpace =
+        availableMatchingSpaces[
+          Math.floor(Math.random() * availableMatchingSpaces.length)
+        ];
+
+      console.log("🅿️ Reserved Space Details:");
+      console.log("Parking Lot:", lot.name);
+      console.log("Space ID:", randomSpace.id);
+      console.log("Space Type:", randomSpace.space_type);
+      console.log("Vehicle Number:", vehicleNumber);
+
+      // Confirm with user
+      const confirmed = window.confirm(
+        `✅ Found available ${randomSpace.space_type} space!\n\n` +
+          `Lot: ${lot.name}\n` +
+          `Space ID: #${randomSpace.id}\n` +
+          `Vehicle: ${vehicleNumber}\n\n` +
+          `Proceed with reservation?`
+      );
+
+      if (!confirmed) {
+        setLoading(false);
+        return;
+      }
+
+      // Reserve the space
+      const reservePayload = {
+        space_id: randomSpace.id,
+      };
+
+      await reserveSpace(reservePayload);
+
+      alert(
+        `🎉 Space reserved successfully!\n\nLot: ${lot.name}\nSpace #${randomSpace.id}`
+      );
+
+      setReservedLotId(lot.id);
+    } catch (error: any) {
+      console.error("Error reserving space:", error);
+      const errorMsg =
+        error.response?.data?.error || error.message || "Failed to reserve space";
+      alert(`❌ Error: ${errorMsg}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -85,7 +150,7 @@ export default function Available_Slots() {
                       vehicleType={vehicleType}
                       available={available}
                       total={lot.capacity}
-                      disabled={reservedLotId !== null}
+                      disabled={reservedLotId === lot.id}
                       onReserve={() => handleReserve(lot)}
                     />
                   );
