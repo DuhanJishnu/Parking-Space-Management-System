@@ -3,7 +3,7 @@ from app.models.parking_space import ParkingSpace, SpaceState
 from app.models.occupancy import Occupancy, OccupancyStatus
 from app.models.vehicle import Vehicle, VehicleType
 from sqlalchemy.exc import SQLAlchemyError
-from datetime import datetime
+from datetime import datetime, timezone
 
 class ParkingService:
     
@@ -21,7 +21,7 @@ class ParkingService:
         return query.all()
     
     @staticmethod
-    def check_in_vehicle(space_id, vehicle_registration, entry_time=None):
+    def check_in_vehicle(space_id, vehicle_registration, entry_time=None, user_id=None):
         """Check in a vehicle to a parking space"""
         try:
             # Check if space is available
@@ -40,11 +40,20 @@ class ParkingService:
                 db.session.add(vehicle)
                 db.session.flush()  # Get the vehicle ID without committing
             
+            # Ensure entry_time is timezone-aware UTC
+            if entry_time is None:
+                entry_time = datetime.now(timezone.utc)
+            elif entry_time.tzinfo is None:
+                entry_time = entry_time.replace(tzinfo=timezone.utc)
+            else:
+                entry_time = entry_time.astimezone(timezone.utc)
+            
             # Create occupancy record
             occupancy = Occupancy(
                 space_id=space_id,
                 vehicle_id=vehicle.id,  # Use the vehicle's integer ID
-                entry_time=entry_time or datetime.utcnow(),
+                user_id=user_id or (vehicle.owner_id if vehicle.owner else None),  # Use provided user_id or vehicle owner
+                entry_time=entry_time,
                 status=OccupancyStatus.ACTIVE
             )
             
@@ -68,8 +77,16 @@ class ParkingService:
             if not occupancy or occupancy.status != OccupancyStatus.ACTIVE:
                 return None, "Invalid or completed occupancy"
             
-            # Set exit time
-            exit_time = exit_time or datetime.utcnow()
+            # Set exit time - ensure it's timezone-aware UTC
+            if exit_time is None:
+                exit_time = datetime.now(timezone.utc)
+            elif exit_time.tzinfo is None:
+                # If naive datetime, assume UTC
+                exit_time = exit_time.replace(tzinfo=timezone.utc)
+            else:
+                # Convert to UTC if it has a different timezone
+                exit_time = exit_time.astimezone(timezone.utc)
+            
             occupancy.exit_time = exit_time
             occupancy.status = OccupancyStatus.COMPLETED
             

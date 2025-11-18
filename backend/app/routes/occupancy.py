@@ -85,9 +85,12 @@ def reserve_space():
                     'error': f'Missing required field: {field}'
                 }), 400
         
+        user_id = data.get('user_id')  # Optional user_id
+        
         # Reserve the space
         space, message = OccupancyService.reserve_space(
-            space_id=data['space_id']
+            space_id=data['space_id'],
+            user_id=user_id
         )
         
         if not space:
@@ -126,10 +129,12 @@ def check_in_vehicle():
         if 'entry_time' in data:
             entry_time = datetime.fromisoformat(data['entry_time'])
         
+        user_id = data.get('user_id')  # Optional user_id
+        
         # First, reserve the space
         space, reserve_message = OccupancyService.reserve_space(
             space_id=data['space_id'],
-            reservation_duration_minutes=0  # Set to 0 to indicate immediate check-in
+            user_id=user_id
         )
         
         if not space:
@@ -142,7 +147,8 @@ def check_in_vehicle():
         occupancy, checkin_message = ParkingService.check_in_vehicle(
             space_id=data['space_id'],
             vehicle_registration=data['vehicle_registration'],
-            entry_time=entry_time
+            entry_time=entry_time,
+            user_id=user_id
         )
         
         if not occupancy:
@@ -221,11 +227,14 @@ def reserve_and_checkin():
         if 'entry_time' in data:
             entry_time = datetime.fromisoformat(data['entry_time'])
         
+        user_id = data.get('user_id')  # Optional user_id
+        
         # Use the combined service method
         result, message = OccupancyService.reserve_and_checkin(
             space_id=data['space_id'],
             vehicle_registration=data['vehicle_registration'],
-            entry_time=entry_time
+            entry_time=entry_time,
+            user_id=user_id
         )
         
         if not result:

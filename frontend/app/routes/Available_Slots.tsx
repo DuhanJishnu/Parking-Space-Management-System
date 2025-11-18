@@ -12,7 +12,8 @@ import { getSpacesByLot } from "~/api/parkingSpaces/getSpacesByLot";
 import { checkIn } from "~/api/occupancy/checkin";
 
 export default function Available_Slots() {
-  const { user } = useContext(UserContext);
+  const userContext = useContext(UserContext) as any;
+  const user = userContext?.user;
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -81,6 +82,7 @@ export default function Available_Slots() {
         user_id : user?.id,
         vehicle_id : vehicleNumber,
         space_id: randomSpace.id,
+        user_id: user?.id,  // Add user_id to reserve
       };
       const res = await checkIn(payload);
 
@@ -117,7 +119,7 @@ export default function Available_Slots() {
   }, [coords, vehicleNumber]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-[#0a0a0a] via-[#111827] to-[#1f2937]  justify-center items-center p-4">
+    <div className="min-h-screen flex flex-col bg-linear-to-b from-[#0a0a0a] via-[#111827] to-[#1f2937]  justify-center items-center p-4">
       {/* Go Back */}
       <div className="w-full flex items-center mb-4">
         <button
