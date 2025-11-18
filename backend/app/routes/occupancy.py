@@ -146,7 +146,6 @@ def check_in_vehicle():
         # Then check in the vehicle
         occupancy, checkin_message = ParkingService.check_in_vehicle(
             space_id=data['space_id'],
-            vehicle_registration=data['vehicle_registration'],
             entry_time=entry_time,
             user_id=user_id
         )
@@ -215,7 +214,7 @@ def reserve_and_checkin():
     try:
         data = request.get_json()
         
-        required_fields = ['space_id', 'vehicle_registration']
+        required_fields = ['space_id']
         for field in required_fields:
             if field not in data:
                 return jsonify({
@@ -232,7 +231,6 @@ def reserve_and_checkin():
         # Use the combined service method
         result, message = OccupancyService.reserve_and_checkin(
             space_id=data['space_id'],
-            vehicle_registration=data['vehicle_registration'],
             entry_time=entry_time,
             user_id=user_id
         )

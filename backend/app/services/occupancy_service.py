@@ -64,7 +64,7 @@ class OccupancyService:
     
     # In your OccupancyService class
     @classmethod
-    def reserve_and_checkin(cls, space_id, vehicle_registration, entry_time=None, user_id=None):
+    def reserve_and_checkin(cls, space_id, entry_time=None, user_id=None):
         """Reserve space and check in vehicle in one operation"""
         try:
             # Reserve the space
@@ -77,7 +77,6 @@ class OccupancyService:
             from app.services.parking_service import ParkingService
             occupancy, checkin_message = ParkingService.check_in_vehicle(
                 space_id=space_id,
-                vehicle_registration=vehicle_registration,
                 entry_time=entry_time,
                 user_id=user_id
             )
