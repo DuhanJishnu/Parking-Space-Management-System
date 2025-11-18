@@ -22,14 +22,17 @@ export default function Available_Slots() {
   const [reservedLotId, setReservedLotId] = useState<number | null>(null);
 
   const handleReserve = async (lot: any) => {
-    const payload={user_id:user.id, vehicle_id:vehicleNumber, }
-    const res = await checkIn({})
-    console.log("Reservation Details:");
-    console.log("Parking Lot ID:", lot.id);
-    console.log("User:", user);
-    console.log("Vehicle Number:", vehicleNumber);
+    try {
+      const payload = { user_id: user.id, vehicle_id: vehicleNumber, space_id:6 };
+      const res = await checkIn(payload);
+      console.log(res);
+      console.log("Reservation Details:");
+      console.log("Parking Lot ID:", lot.id);
+      console.log("User:", user);
+      console.log("Vehicle Number:", vehicleNumber);
 
-    setReservedLotId(lot.id);
+      setReservedLotId(lot.id);
+    } catch (err) {}
   };
 
   useEffect(() => {
