@@ -55,19 +55,23 @@ export default function Home() {
           className="w-64 flex items-center justify-center bg-gradient-to-r from-[#facc15] to-[#f59e0b] rounded-2xl px-6 py-3 shadow-lg active:scale-95 transition-transform duration-150"
         >
           <span className="text-xl font-semibold tracking-wide">
-            Fetch Your Vehicle
+            Your Parked Vehicle
           </span>
         </button>
 
-        <button
-          onClick={() => handleOptionSelect("/bills")}
-          className="w-64 flex items-center justify-center bg-gradient-to-r from-[#facc15] to-[#f59e0b] 
-             rounded-2xl px-6 py-3 shadow-lg active:scale-95 transition-transform duration-150"
-        >
-          <span className="text-xl font-semibold tracking-wide">
-            View Bills
-          </span>
-        </button>
+        <div className="w-full flex justify-end pr-6 mt-4">
+          <button
+            onClick={() => handleOptionSelect("/bills")}
+            className="w-48 flex items-center justify-center 
+               bg-gradient-to-r from-blue-500 to-blue-700 
+               rounded-2xl px-6 py-2 shadow-lg 
+               active:scale-95 transition-transform duration-150"
+          >
+            <span className="text-lg font-semibold tracking-wide text-white">
+              View Bills
+            </span>
+          </button>
+        </div>
       </div>
 
       {/* Footer */}

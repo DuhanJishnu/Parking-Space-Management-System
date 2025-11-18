@@ -1,13 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import PLotCards from "~/components/P_Lot_Cards";
 import { useNavigate, useLocation } from "react-router";
 import { ArrowLeft } from "lucide-react";
 
+import { UserContext } from "../context/User";
 import FindingScreen from "~/components/Find_Screen";
 
 import { getParkingLots } from "~/api/parkingLots/getLots";
+import { checkIn } from "~/api/occupancy/checkin";
 
 export default function Available_Slots() {
+  const { user } = useContext(UserContext);
+
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -15,6 +19,18 @@ export default function Available_Slots() {
 
   const [availableSpaces, setAvailableSpaces] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [reservedLotId, setReservedLotId] = useState<number | null>(null);
+
+  const handleReserve = async (lot: any) => {
+    const payload={user_id:user.id, vehicle_id:vehicleNumber, }
+    const res = await checkIn({})
+    console.log("Reservation Details:");
+    console.log("Parking Lot ID:", lot.id);
+    console.log("User:", user);
+    console.log("Vehicle Number:", vehicleNumber);
+
+    setReservedLotId(lot.id);
+  };
 
   useEffect(() => {
     if (!coords || !vehicleNumber) return;
@@ -45,48 +61,43 @@ export default function Available_Slots() {
         </button>
       </div>
 
-      {/* Title */}
+      {loading && <FindingScreen />}
 
-      {/* Loading */}
-      {loading && (
-        <FindingScreen/>
-      )}
-
-      { !loading && (
+      {!loading && (
         <>
-        
-        <h1 className="text-3xl font-bold text-yellow-400 mb-6">
-        Available Parking Lots
-      </h1>
-     
-      <div className="flex flex-col gap-3 w-full max-w-md">
-        {!loading && availableSpaces.length > 0 ? (
-          availableSpaces.map((lot: any, idx: number) => {
-            const available =
-              vehicleType === "Car"
-                ? lot.available_4w_spaces
-                : lot.available_2w_spaces;
+          <h1 className="text-3xl font-bold text-yellow-400 mb-6">
+            Available Parking Lots
+          </h1>
 
-            return (
-              <PLotCards
-                key={idx}
-                area={lot.name}
-                vehicleType={vehicleType}
-                available={available}
-                total={lot.capacity}
-              />
-            );
-          })
-        ) : (
-          !loading && (
-            <p className="text-white text-center">
-              No available spaces found.
-            </p>
-          )
-        )}
-      </div>
-      </>
-    )}
+          <div className="flex flex-col gap-3 w-full max-w-md">
+            {!loading && availableSpaces.length > 0
+              ? availableSpaces.map((lot: any, idx: number) => {
+                  const available =
+                    vehicleType === "4W"
+                      ? lot.available_4w_spaces
+                      : lot.available_2w_spaces;
+
+                  return (
+                    <PLotCards
+                      key={idx}
+                      lotId={lot.id}
+                      area={lot.name}
+                      vehicleType={vehicleType}
+                      available={available}
+                      total={lot.capacity}
+                      disabled={reservedLotId !== null}
+                      onReserve={() => handleReserve(lot)}
+                    />
+                  );
+                })
+              : !loading && (
+                  <p className="text-white text-center">
+                    No available spaces found.
+                  </p>
+                )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
