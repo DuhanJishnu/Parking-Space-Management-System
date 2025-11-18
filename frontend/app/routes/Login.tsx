@@ -7,17 +7,25 @@ import { createUser } from "~/api/user/createUser";
 const Login = () => {
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
-  const { setUser } = useContext(UserContext);
+  const [role, setRole] = useState("customer");
+  const { setUser, setRole: setContextRole } = useContext(UserContext);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (name && contact) {
-      const payload = {name , contact_no : contact}
+      const payload = {name , contact_no : contact, role: role}
       const res = await createUser(payload);
       console.log( "res from create user : " , res.data);
       setUser(res.data);
-      navigate("/home");
+      setContextRole(role);
+      
+      // Route based on role
+      if (role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/home");
+      }
     }
   };
 
@@ -70,6 +78,23 @@ const Login = () => {
               className="bg-[#111827] border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-vsyellow"
               required
             />
+          </div>
+
+          {/* Role Selection */}
+          <div className="flex flex-col">
+            <label htmlFor="role" className="text-gray-300 mb-1 text-lg">
+              Role
+            </label>
+            <select
+              id="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="bg-[#111827] border border-gray-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-vsyellow"
+            >
+              <option value="customer">Customer</option>
+              <option value="admin">Admin</option>
+              <option value="staff">Staff</option>
+            </select>
           </div>
 
           {/* Button */}
