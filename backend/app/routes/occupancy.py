@@ -117,7 +117,7 @@ def check_in_vehicle():
     try:
         data = request.get_json()
         
-        required_fields = ['space_id', 'vehicle_registration']
+        required_fields = ['space_id']
         for field in required_fields:
             if field not in data:
                 return jsonify({
