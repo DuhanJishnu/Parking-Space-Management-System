@@ -29,7 +29,7 @@ const BillingPage = () => {
 
       // Fetch bills for this specific customer (owner_id)
       const response = await fetch(
-        `http://localhost:5000/api/billing/?owner_id=${user.id}`
+        `http://192.168.3.51:5000/api/billing/?owner_id=${user.id}`
       );
       const data = await response.json();
       if (data.success) {
@@ -39,7 +39,7 @@ const BillingPage = () => {
         for (const bill of data.data || []) {
           try {
             const occResponse = await fetch(
-              `http://localhost:5000/api/occupancy/${bill.occupancy_id}`
+              `http://192.168.3.51:5000/api/occupancy/${bill.occupancy_id}`
             );
             const occJSON = await occResponse.json();
             if (occJSON.success) {
@@ -77,7 +77,7 @@ const BillingPage = () => {
       setProcessingBillId(billId);
 
       const response = await fetch(
-        `http://localhost:5000/api/billing/${billId}/pay`,
+        `http://192.168.3.51:5000/api/billing/${billId}/pay`,
         {
           method: "POST",
           headers: {

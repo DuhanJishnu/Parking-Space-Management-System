@@ -34,7 +34,7 @@ const StaffDashboard = () => {
   const fetchActiveOccupancies = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:5000/api/occupancy/active");
+      const response = await fetch("http://192.168.3.51:5000/api/occupancy/active");
       const data = await response.json();
       if (data.success) {
         setActiveOccupancies(data.data || []);
@@ -47,7 +47,7 @@ const StaffDashboard = () => {
 
   const fetchBills = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/billing/");
+      const response = await fetch("http://192.168.3.51:5000/api/billing/");
       const data = await response.json();
       if (data.success) {
         setBills(data.data || []);
@@ -116,7 +116,7 @@ const StaffDashboard = () => {
 
       // Call checkout endpoint to mark vehicle as exited and generate bill
       const response = await fetch(
-        `http://localhost:5000/api/occupancy/${selectedOccupancy.id}/check-out`,
+        `http://192.168.3.51:5000/api/occupancy/${selectedOccupancy.id}/check-out`,
         {
           method: "POST",
           headers: {
